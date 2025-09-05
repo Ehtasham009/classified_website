@@ -4,21 +4,32 @@
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     // $_GET['page'] = 2, so:
     $start = ($page - 1) * $limit;  // (2 - 1) * 10 = 10
+    // $pages_per_set = 5;
 
+    $pages_per_set = 5; // show 5 pages in middle
+    // echo floor($pages_per_set / 2); die();
+    $start_page = max(2, $page - floor($pages_per_set / 2)); 
+    // e.g 5 - 2 = 3 
+    
+    // echo $start_page;
+    
+    $end_page   = min($total_pages - 1, $start_page + $pages_per_set - 1);
+    
     if(isset($_GET['id'])){
         $id = $_GET['id'];
         $delete = "DELETE FROM `users` WHERE `id` = $id";
-
+        
         $conn->query($delete);
     }
     $query = "SELECT * FROM users LIMIT $start , $limit" ;
-
+    
     $result = $conn->query($query);
-
+    
     $result1 = $conn->query("SELECT COUNT(id) AS total FROM users");
     $row = $result1->fetch_assoc();
     $total = $row['total'];
-
+    // echo $page;
+    
     $pages = ceil($total/$limit);
 
 ?>
@@ -47,7 +58,6 @@
         color: white;
         }
 
-        .pagination a:hover:not(.active) {background-color: #ddd;}
         </style>
 </head>
 <body>
@@ -55,42 +65,37 @@
 
 
 <div class="pagination">
-    <?php 
-        $page_number = $_GET['page'];
-        // echo '<h1>' . $page_number .'</h1>';
-    ?>
-    <a href="<?php echo '?page=' . --$page_number; ?>">&laquo;</a>
-    
 
-    <!-- <?php 
-        for ($i = 1; $i <= $pages; $i++) {
-            // echo "<a href='?page=$i'>$i</a> ";
-            ?>
-            <a class="active" href="<?php echo '?page=' . $i; ?>"><?php echo $i ?></a>
-        <?php
-        }
-    ?> -->
+    <!-- <a href="<?php // echo '?page=' . --$page; ?>">&laquo;</a> -->
+
     <?php
-        $current = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $pages   = 50; // total pages
-        $limit   = 5;  // how many buttons to show at a time
-
-        // figure out which "block" of pages we’re in
-        $start = floor(($current - 1) / $limit) * $limit + 1;
-        $end   = min($start + $limit - 1, $pages);
-
-        // show pagination
-        for ($i = $start; $i <= $end; $i++) {
-            $active = ($i == $current) ? "active" : "";
-            echo "<a class='$active' href='?page=$i'>$i</a> ";
-        }
+        // echo $page - 1;
+        // echo '<br>';
+        // echo $page;
+        // echo '<br>';
+        // $page = $page - 1;
+        // echo '<br>';
+        // echo $page;
+        // die();
     ?>
+    
+    <a class="" href="<?php echo '?page=1'; ?>">1</a>
+    <a href="<?php echo '?page=' . ($page - 1); ?>">Previous</a>
+
     <?php 
-        $page_number = $_GET['page'];
-        // echo '<h1>' . $page_number .'</h1>';
-    ?>
-    <a class='' href=''></a>
-  <a href="<?php echo '?page=' . ++$page_number; ?>">&raquo;</a>
+        $start_page = max(2, $page - floor($pages_per_set / 2));  
+        $end_page   = min($total_pages - 1, $start_page + $pages_per_set - 1);
+        
+        echo $start_page; 
+        for ($i = $start_page; $i <= $end_page; $i++) {
+            ?>
+            <a class="<?php echo ($page == $i) ? 'active' : ' '  ;?>" href="<?php echo '?page=' . $i; ?>"><?php echo $i ?></a>
+            <?php
+        }
+        ?>
+        
+        <a href="<?php echo '?page=' . ($page + 1); ?>">Next</a>
+        <a class="" href="<?php echo '?page=' . $pages; ?>"><?php echo $pages ?></a>
 </div>
 
 <h2>Create Task</h2>
