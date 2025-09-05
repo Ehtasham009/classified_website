@@ -84,13 +84,19 @@
 
     <?php 
         $start_page = max(2, $page - floor($pages_per_set / 2));  
-        $end_page   = min($total_pages - 1, $start_page + $pages_per_set - 1);
+        $end_page   = min($pages - 1, $start_page + $pages_per_set - 1);
         
-        echo $start_page; 
+        if ($start_page > 2) {
+            echo "<span>...</span>";
+        }
+        // echo $end_page; 
         for ($i = $start_page; $i <= $end_page; $i++) {
             ?>
             <a class="<?php echo ($page == $i) ? 'active' : ' '  ;?>" href="<?php echo '?page=' . $i; ?>"><?php echo $i ?></a>
             <?php
+        }
+        if ($end_page < $pages - 1) {
+            echo "<span>...</span>";
         }
         ?>
         
